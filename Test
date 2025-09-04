@@ -1,2 +1,0 @@
-local v = "this a test!!"
-print(v)
