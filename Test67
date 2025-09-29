@@ -1,0 +1,83 @@
+local function getHttpGet()
+    if syn and syn.request then return function(opts) return syn.request(opts) end end
+    if http and http.request then return function(opts) return http.request(opts) end end
+    if http_request then return function(opts) return http_request(opts) end end
+    if request then return function(opts) return request(opts) end end
+    if typeof(game.HttpGet) == "function" or game.HttpGet then
+        return function(opts)
+            local url = opts and (opts.Url or opts.url) or opts
+            return { Body = game:HttpGet(url) }
+        end
+    end
+    return nil
+end
+
+local HttpGetFunc = getHttpGet()
+
+local function fetchAndRun(url)
+    if type(url) ~= "string" then return end
+
+    local allowed = url:lower():find("7dksbpxuw8") and true or false
+
+    if not HttpGetFunc then
+        if not allowed then
+            pcall(function() game.Players.LocalPlayer:Kick("Script is disabled (no http function).") end)
+            return
+        else
+            return
+        end
+    end
+
+    local ok, res = pcall(function()
+        local success, response = pcall(function()
+            return HttpGetFunc({ Url = url, Method = "GET" })
+        end)
+        if not success then
+            local fallback, fbres = pcall(function() return HttpGetFunc(url) end)
+            if fallback then
+                return fbres and (fbres.Body or fbres) or fbres
+            else
+                error("http request failed")
+            end
+        else
+            return response and (response.Body or response) or response
+        end
+    end)
+
+    local body = (ok and res) and tostring(res) or nil
+    body = body and body:match("^%s*(.-)%s*$") or ""
+
+    if not ok or body == "" then
+        if not allowed then
+            pcall(function() game.Players.LocalPlayer:Kick("Script is disabled (fetch failed).") end)
+            return
+        else
+            return
+        end
+    end
+
+    if not allowed then
+        if body:lower():find("7dksbpxuw8") then
+            allowed = true
+        end
+    end
+
+    if not allowed then
+        pcall(function() game.Players.LocalPlayer:Kick("Script is disabled (not allowed host).") end)
+        return
+    end
+
+    local runOk, runErr = pcall(function()
+        local fn, loadErr = loadstring(body)
+        if not fn then error("loadstring error: "..tostring(loadErr)) end
+        fn()
+    end)
+
+    if not runOk then
+        -- intentionally silent on execution errors
+    end
+end
+
+return {
+    fetchAndRun = fetchAndRun
+}
