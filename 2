@@ -1,0 +1,113 @@
+local player = game:GetService("Players").LocalPlayer
+local CollectionService = game:GetService("CollectionService")
+local vim = game:GetService("VirtualInputManager")
+
+local G2L = {}
+
+G2L["ScreenGui_1"] = Instance.new("ScreenGui", game:GetService("CoreGui"))
+G2L["ScreenGui_1"].ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+G2L["ScreenGui_1"].Name = "AutoClickerGUI"
+CollectionService:AddTag(G2L["ScreenGui_1"], "main")
+
+G2L["Frame4_2"] = Instance.new("Frame", G2L["ScreenGui_1"])
+G2L["Frame4_2"].ZIndex = 1999999
+G2L["Frame4_2"].BorderSizePixel = 0
+G2L["Frame4_2"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+G2L["Frame4_2"].Size = UDim2.new(0, 52, 0, 52)
+G2L["Frame4_2"].Position = UDim2.new(1, -373, 1, -233)
+G2L["Frame4_2"].Name = "Frame4"
+G2L["Frame4_2"].BackgroundTransparency = 1
+
+local corner1 = Instance.new("UICorner", G2L["Frame4_2"])
+corner1.CornerRadius = UDim.new(0, 800)
+
+local stroke = Instance.new("UIStroke", G2L["Frame4_2"])
+stroke.Thickness = 5
+stroke.Color = Color3.fromRGB(66, 130, 255)
+
+local inner = Instance.new("Frame", G2L["Frame4_2"])
+inner.BorderSizePixel = 0
+inner.BackgroundColor3 = Color3.fromRGB(115, 167, 255)
+inner.Size = UDim2.new(0, 52, 0, 52)
+inner.BackgroundTransparency = 0.8
+
+local corner2 = Instance.new("UICorner", inner)
+corner2.CornerRadius = UDim.new(0, 500)
+
+local sr1 = Instance.new("Frame", G2L["Frame4_2"])
+sr1.BorderSizePixel = 0
+sr1.BackgroundColor3 = Color3.fromRGB(66, 130, 255)
+sr1.Size = UDim2.new(0, 16, 0, 14)
+sr1.Position = UDim2.new(1, -34, 1, -32)
+sr1.Name = "Frame3"
+
+local corner3 = Instance.new("UICorner", mini)
+corner3.CornerRadius = UDim.new(0, 800)
+
+local drag = Instance.new("UIDragDetector", G2L["Frame4_2"])
+drag.DragUDim2 = UDim2.new(0, -20, 0, -8)
+
+G2L["Frame_a"] = Instance.new("Frame", G2L["ScreenGui_1"])
+G2L["Frame_a"].BorderSizePixel = 0
+G2L["Frame_a"].BackgroundColor3 = Color3.fromRGB(3, 3, 3)
+G2L["Frame_a"].Size = UDim2.new(0, 50, 0, 95)
+G2L["Frame_a"].Position = UDim2.new(0, 228, 0, 80)
+G2L["Frame_a"].BackgroundTransparency = 0.3
+
+local corner4 = Instance.new("UICorner", G2L["Frame_a"])
+
+G2L["ImageButton_d"] = Instance.new("ImageButton", G2L["Frame_a"])
+G2L["ImageButton_d"].BorderSizePixel = 0
+G2L["ImageButton_d"].BackgroundTransparency = 1
+G2L["ImageButton_d"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+G2L["ImageButton_d"].Image = "rbxassetid://99419156203575"
+G2L["ImageButton_d"].Size = UDim2.new(0, 32, 0, 34)
+G2L["ImageButton_d"].Position = UDim2.new(0, 10, 0, 8)
+G2L["ImageButton_d"].Name = "ImageButton_AutoClicker"
+
+G2L["ImageButton2_c"] = Instance.new("ImageLabel", G2L["Frame_a"])
+G2L["ImageButton2_c"].BorderSizePixel = 0
+G2L["ImageButton2_c"].BackgroundTransparency = 1
+G2L["ImageButton2_c"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+G2L["ImageButton2_c"].Image = "rbxassetid://95758806178676"
+G2L["ImageButton2_c"].Size = UDim2.new(0, 38, 0, 36)
+G2L["ImageButton2_c"].Position = UDim2.new(0, 6, 0, 50)
+G2L["ImageButton2_c"].Name = "ImageButton_Destroy"
+
+local drag2 = Instance.new("UIDragDetector", G2L["Frame_a"])
+
+local clicking = false
+
+local function startClicking()
+	clicking = true
+	task.spawn(function()
+		while clicking do
+			local pos = G2L["Frame4_2"].AbsolutePosition
+			local size = G2L["Frame4_2"].AbsoluteSize
+			local centerX = pos.X + size.X / 1
+			local centerY = pos.Y + size.Y / 1
+
+			vim:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
+			vim:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
+
+			task.wait(0.001)
+		end
+	end)
+end
+
+G2L["ImageButton_d"].MouseButton1Click:Connect(function()
+	clicking = not clicking
+	if clicking then
+		G2L["ImageButton_d"].Image = "rbxassetid://76930647955824"
+		startClicking()
+	else
+		G2L["ImageButton_d"].Image = "rbxassetid://99419156203575"
+	end
+end)
+
+G2L["ImageButton2_c"].MouseButton1Click:Connect(function()
+	clicking = false
+	G2L["ScreenGui_1"]:Destroy()
+end)
+
+return G2L["ScreenGui_1"], require
