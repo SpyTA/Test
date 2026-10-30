@@ -1,0 +1,39 @@
+local Players = game:GetService("Players")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+local player = Players.LocalPlayer
+local frames = player.PlayerGui.Frames
+
+frames.Cark.Visible = true
+frames.Cark2.Visible = true
+
+frames.Cark2.Position = UDim2.new(0.649999976, 0, 0.107391529, 0)
+
+local function clickButtonAdaptively(button, offsetX, offsetY)
+    offsetX = offsetX or 0
+    offsetY = offsetY or 0
+
+    local absPos = button.AbsolutePosition
+    local absSize = button.AbsoluteSize
+
+    local centerX = absPos.X + absSize.X / 1 + offsetX
+    local centerY = absPos.Y + absSize.Y / 0.4 + offsetY
+
+    VirtualInputManager:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
+    task.wait(0.1)
+    VirtualInputManager:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
+end
+
+local buttons = {
+    frames.Cark.spin,
+    frames.Cark2.spin
+}
+
+while task.wait(0.5) do
+    for _, button in ipairs(buttons) do
+        if button.Text ~= "Dakika" then
+            clickButtonAdaptively(button)
+            task.wait(0.2)
+        end
+    end
+end
